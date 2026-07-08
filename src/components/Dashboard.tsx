@@ -1,6 +1,6 @@
 // =============================================
 // QT SSW ACADEMY — Dashboard Component
-// Progress overview with Recharts radar + bar
+// Inspired by qualitex-trading.com training hub layout
 // =============================================
 
 import React from 'react';
@@ -9,16 +9,30 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell,
 } from 'recharts';
 import { COURSES } from '../data/courses';
+import { FEATURED_RESOURCES, QUICK_ACTIONS } from '../data/resources';
 import type { Language } from '../types';
+import type { BadgeStatus } from './ui/StatusBadge';
+import SectionHeader from './ui/SectionHeader';
+import StatCounter from './ui/StatCounter';
+import ProgressBar from './ui/ProgressBar';
+import QuickActionCard from './ui/QuickActionCard';
+import ResourceCard from './ui/ResourceCard';
 
 interface DashboardProps {
   lang: Language;
   t: (ja: string, en: string) => string;
+  onNavigate?: (tab: 'dashboard' | 'flashcards' | 'quiz' | 'inspect' | 'certificate') => void;
 }
 
 const SKILL_COLORS = ['#E8621A', '#D4A843', '#2D5A8E', '#2E7D52', '#8A9BB0', '#C4521A'];
 
-const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
+const courseStatus = (progress: number): BadgeStatus => {
+  if (progress === 100) return 'completed';
+  if (progress > 0) return 'in-progress';
+  return 'available';
+};
+
+const Dashboard: React.FC<DashboardProps> = ({ lang, t, onNavigate }) => {
   const radarData = COURSES.map(c => ({
     subject: lang === 'ja' ? c.titleJa.replace('・', '\n') : c.titleEn.split(' ')[0],
     value: c.progress,
@@ -34,87 +48,108 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
   const totalProgress = Math.round(COURSES.reduce((s, c) => s + c.progress, 0) / COURSES.length);
   const completedCourses = COURSES.filter(c => c.progress === 100).length;
   const totalLessons = COURSES.reduce((s, c) => s + c.completedLessons, 0);
-
-  const statCards = [
-    {
-      labelJa: '総合進捗',
-      labelEn: 'Overall Progress',
-      value: `${totalProgress}%`,
-      sub: t('全コース平均', 'All courses avg.'),
-      color: '#E8621A',
-    },
-    {
-      labelJa: '修了コース',
-      labelEn: 'Completed',
-      value: `${completedCourses} / ${COURSES.length}`,
-      sub: t('コース', 'courses'),
-      color: '#D4A843',
-    },
-    {
-      labelJa: '完了レッスン',
-      labelEn: 'Lessons Done',
-      value: totalLessons,
-      sub: t('レッスン', 'lessons'),
-      color: '#2D5A8E',
-    },
-    {
-      labelJa: 'JLPT N4',
-      labelEn: 'JLPT N4',
-      value: '20',
-      sub: t('語彙学習中', 'vocab in progress'),
-      color: '#2E7D52',
-    },
-  ];
+  const totalModules = COURSES.length;
+  const completedModules = COURSES.filter(c => c.progress >= 70).length;
 
   return (
     <div style={{ padding: '32px 0' }}>
-      {/* Welcome banner */}
+      {/* Hero — matches WP bilingual header pattern */}
       <div style={{
         background: 'linear-gradient(135deg, #112236 0%, #1E3A5F 100%)',
         border: '1px solid rgba(232,98,26,0.3)',
         borderLeft: '4px solid #E8621A',
         borderRadius: 8,
-        padding: '20px 28px',
-        marginBottom: 32,
+        padding: '24px 28px',
+        marginBottom: 28,
       }}>
-        <div style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: 13, letterSpacing: '0.15em', color: '#E8621A', marginBottom: 6 }}>
-          TECH READS®-NECH — SSW TRAINING PROGRAM
+        <div style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: 12, letterSpacing: '0.15em', color: '#E8621A', marginBottom: 8 }}>
+          TECH READS®-NECH • QT DRIVE INNOVATIONS®
         </div>
-        <div style={{ fontSize: 22, fontWeight: 700, color: '#F0EDE8', marginBottom: 4 }}>
-          {t('Zain様、学習を続けましょう。', 'Keep going, Zain.')}
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#F0EDE8', margin: '0 0 6px', lineHeight: 1.2 }}>
+          {t('トレーニングプログラム資料', 'Training Program Resources')}
+        </h1>
+        <p style={{ fontSize: 14, color: '#8A9BB0', margin: 0 }}>
+          {t('研修リソースセンター | SSW 1 / JLPT N4', 'Training Resource Center | SSW 1 / JLPT N4')}
+        </p>
+      </div>
+
+      {/* Overall progress — WP "Overall Training Progress" block */}
+      <div style={{
+        background: '#112236',
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: 10,
+        padding: '24px 28px',
+        marginBottom: 28,
+      }}>
+        <SectionHeader
+          titleEn="Overall Training Progress"
+          titleJa="全体の進捗状況"
+          lang={lang}
+        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 20, flexWrap: 'wrap' }}>
+          <div style={{
+            fontSize: 48,
+            fontWeight: 700,
+            color: '#E8621A',
+            fontFamily: 'Rajdhani, sans-serif',
+            lineHeight: 1,
+            minWidth: 100,
+          }}>
+            {totalProgress}%
+          </div>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <ProgressBar value={totalProgress} showPercent={false} height={12} />
+          </div>
         </div>
-        <div style={{ fontSize: 14, color: '#8A9BB0' }}>
-          {t(
-            '特定技能1号（自動車整備）の合格に向けて、今日も一歩前進。',
-            'One step closer to SSW-1 (Automotive Maintenance) certification today.'
-          )}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+          <StatCounter value={`${completedModules}/${totalModules}`} labelJa="モジュール" labelEn="Modules" lang={lang} accent="#D4A843" />
+          <StatCounter value={totalLessons} labelJa="時間" labelEn="Hours" subJa="学習単位" subEn="study units" lang={lang} accent="#2D5A8E" />
+          <StatCounter value={completedCourses} labelJa="証明書" labelEn="Certificates" subJa="修了コース" subEn="completed" lang={lang} accent="#2E7D52" />
+          <StatCounter value={`${totalProgress}%`} labelJa="クイズスコア" labelEn="Quiz Score" subJa="総合進捗" subEn="overall" lang={lang} accent="#E8621A" />
         </div>
       </div>
 
-      {/* Stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 36 }}>
-        {statCards.map((s, i) => (
-          <div key={i} style={{
-            background: '#112236',
-            border: `1px solid rgba(255,255,255,0.08)`,
-            borderTop: `3px solid ${s.color}`,
-            borderRadius: 8,
-            padding: '20px 22px',
-          }}>
-            <div style={{ fontSize: 11, letterSpacing: '0.12em', color: '#8A9BB0', marginBottom: 8, fontFamily: 'Rajdhani, sans-serif', fontWeight: 600 }}>
-              {lang === 'ja' ? s.labelJa : s.labelEn}
-            </div>
-            <div style={{ fontSize: 32, fontWeight: 700, color: s.color, fontFamily: 'Rajdhani, sans-serif', lineHeight: 1 }}>
-              {s.value}
-            </div>
-            <div style={{ fontSize: 12, color: '#8A9BB0', marginTop: 4 }}>{s.sub}</div>
-          </div>
-        ))}
+      {/* Quick Actions — WP horizontal action cards */}
+      <div style={{ marginBottom: 32 }}>
+        <SectionHeader titleEn="Quick Actions" titleJa="クイックアクション" lang={lang} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+          {QUICK_ACTIONS.map(action => (
+            <QuickActionCard
+              key={action.id}
+              icon={action.icon}
+              titleJa={action.titleJa}
+              titleEn={action.titleEn}
+              lang={lang}
+              onClick={() => action.tab && onNavigate?.(action.tab)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Featured Resources — WP card grid with badges */}
+      <div style={{ marginBottom: 36 }}>
+        <SectionHeader titleEn="Featured Resources" titleJa="注目のリソース" lang={lang} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+          {FEATURED_RESOURCES.map(resource => (
+            <ResourceCard
+              key={resource.id}
+              icon={resource.icon}
+              titleJa={resource.titleJa}
+              titleEn={resource.titleEn}
+              descJa={resource.descJa}
+              descEn={resource.descEn}
+              status={resource.status}
+              ctaJa={resource.ctaJa}
+              ctaEn={resource.ctaEn}
+              lang={lang}
+              onClick={() => resource.tab && onNavigate?.(resource.tab)}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Charts row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 36 }}>
-        {/* Radar chart */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, marginBottom: 36 }}>
         <div style={{ background: '#112236', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '24px 16px' }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#D4A843', marginBottom: 16, letterSpacing: '0.08em' }}>
             {t('スキルレーダー', 'Skill Radar')}
@@ -127,20 +162,12 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
                   dataKey="subject"
                   tick={{ fill: '#8A9BB0', fontSize: 11, fontFamily: 'Noto Sans JP, sans-serif' }}
                 />
-                <Radar
-                  name="Progress"
-                  dataKey="value"
-                  stroke="#E8621A"
-                  fill="#E8621A"
-                  fillOpacity={0.25}
-                  strokeWidth={2}
-                />
+                <Radar name="Progress" dataKey="value" stroke="#E8621A" fill="#E8621A" fillOpacity={0.25} strokeWidth={2} />
               </RadarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Bar chart */}
         <div style={{ background: '#112236', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '24px 16px' }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#D4A843', marginBottom: 16, letterSpacing: '0.08em' }}>
             {t('コース別進捗', 'Progress by Course')}
@@ -166,77 +193,24 @@ const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
         </div>
       </div>
 
-      {/* Course cards */}
-      <div style={{ marginBottom: 8 }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#D4A843', letterSpacing: '0.1em', marginBottom: 16 }}>
-          {t('コース一覧', 'COURSE LIST')}
-        </div>
+      {/* Learning Modules — WP module card pattern */}
+      <div>
+        <SectionHeader titleEn="Learning Modules" titleJa="学習モジュール" lang={lang} />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
           {COURSES.map(course => (
-            <div key={course.id} style={{
-              background: '#112236',
-              border: '1px solid rgba(255,255,255,0.07)',
-              borderRadius: 8,
-              padding: '20px',
-              transition: 'border-color 0.2s, transform 0.2s',
-              cursor: 'pointer',
-            }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(232,98,26,0.5)';
-                (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.07)';
-                (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)';
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 14 }}>
-                <span style={{ fontSize: 28, lineHeight: 1 }}>{course.icon}</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: '#F0EDE8', marginBottom: 4 }}>
-                    {lang === 'ja' ? course.titleJa : course.titleEn}
-                  </div>
-                  <div style={{ fontSize: 12, color: '#8A9BB0', lineHeight: 1.5 }}>
-                    {lang === 'ja' ? course.descJa : course.descEn}
-                  </div>
-                </div>
-              </div>
-
-              {/* Progress bar */}
-              <div style={{ marginBottom: 8 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 11, color: '#8A9BB0' }}>
-                    {t('進捗', 'Progress')}
-                  </span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: course.progress >= 70 ? '#2E7D52' : course.progress >= 40 ? '#D4A843' : '#E8621A' }}>
-                    {course.progress}%
-                  </span>
-                </div>
-                <div style={{ height: 6, background: 'rgba(255,255,255,0.08)', borderRadius: 3, overflow: 'hidden' }}>
-                  <div style={{
-                    height: '100%',
-                    width: `${course.progress}%`,
-                    background: course.progress >= 70 ? '#2E7D52' : course.progress >= 40 ? '#D4A843' : '#E8621A',
-                    borderRadius: 3,
-                    transition: 'width 0.6s ease',
-                  }} />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 11, color: '#8A9BB0' }}>
-                  {course.completedLessons} / {course.totalLessons} {t('レッスン', 'lessons')}
-                </span>
-                <div style={{ display: 'flex', gap: 4 }}>
-                  {Array.from({ length: 3 }, (_, i) => (
-                    <div key={i} style={{
-                      width: 8, height: 8, borderRadius: '50%',
-                      background: i < course.difficulty ? '#D4A843' : 'rgba(255,255,255,0.1)',
-                    }} />
-                  ))}
-                </div>
-              </div>
-            </div>
+            <ResourceCard
+              key={course.id}
+              icon={course.icon}
+              titleJa={course.titleJa}
+              titleEn={course.titleEn}
+              descJa={course.descJa}
+              descEn={course.descEn}
+              status={courseStatus(course.progress)}
+              ctaJa={course.progress > 0 ? '続ける' : 'アクセス'}
+              ctaEn={course.progress > 0 ? 'Continue' : 'Access Module'}
+              lang={lang}
+              progress={course.progress}
+            />
           ))}
         </div>
       </div>

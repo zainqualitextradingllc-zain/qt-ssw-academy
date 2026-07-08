@@ -67,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({ lang, onToggleLang }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {/* SSW badge */}
             <div style={{
-              display: 'none',
+              display: 'flex',
               background: 'rgba(212,168,67,0.12)',
               border: '1px solid rgba(212,168,67,0.4)',
               borderRadius: 4,

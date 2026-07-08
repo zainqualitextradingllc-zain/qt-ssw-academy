@@ -37,7 +37,7 @@ const App: React.FC = () => {
 
   const renderTab = () => {
     switch (activeTab) {
-      case 'dashboard':   return <Dashboard lang={lang} t={t} />;
+      case 'dashboard':   return <Dashboard lang={lang} t={t} onNavigate={setActiveTab} />;
       case 'flashcards':  return <FlashCards lang={lang} t={t} />;
       case 'quiz':        return <Quiz lang={lang} t={t} />;
       case 'inspect':     return <InspectTag lang={lang} t={t} />;

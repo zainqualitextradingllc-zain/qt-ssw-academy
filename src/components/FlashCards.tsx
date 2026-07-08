@@ -7,6 +7,7 @@
 import React, { useState } from 'react';
 import { FLASHCARDS } from '../data/flashcards';
 import type { Language } from '../types';
+import StatusBadge from './ui/StatusBadge';
 
 interface FlashCardsProps {
   lang: Language;
@@ -80,8 +81,11 @@ const FlashCards: React.FC<FlashCardsProps> = ({ lang, t }) => {
           <div style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: 12, letterSpacing: '0.15em', color: '#E8621A', marginBottom: 4 }}>
             TECH READS®-NECH — JLPT N4
           </div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#F0EDE8' }}>
-            {t('語彙フラッシュカード', 'Vocabulary Flashcards')}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#F0EDE8' }}>
+              {t('語彙フラッシュカード', 'Vocabulary Flashcards')}
+            </div>
+            <StatusBadge status="new" lang={lang} />
           </div>
         </div>
         <div style={{ textAlign: 'right' }}>
