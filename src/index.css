@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --navy:       #0B1929;
+  --navy-mid:   #112236;
+  --steel:      #1E3A5F;
+  --steel-light:#2D5A8E;
+  --accent:     #E8621A;
+  --accent-dim: #C4521A;
+  --gold:       #D4A843;
+  --off-white:  #F0EDE8;
+  --muted:      #8A9BB0;
+  --success:    #2E7D52;
+  --danger:     #C0392B;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background-color: var(--navy);
+  color: var(--off-white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root { min-height: 100vh; width: 100%; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--navy-mid); }
+::-webkit-scrollbar-thumb { background: var(--steel-light); border-radius: 3px; }
+
+*:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
