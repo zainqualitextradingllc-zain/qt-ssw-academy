@@ -15,7 +15,13 @@ if (existsSync(assetsDir)) {
   rmSync(assetsDir, { recursive: true, force: true })
 }
 
+const skipFiles = new Set(['index.dev.html'])
+
 for (const entry of readdirSync(dist, { withFileTypes: true })) {
+  if (skipFiles.has(entry.name)) {
+    continue
+  }
+
   const source = join(dist, entry.name)
   const target = join(root, entry.name)
 
@@ -26,10 +32,10 @@ for (const entry of readdirSync(dist, { withFileTypes: true })) {
   }
 }
 
-const distDevHtml = join(dist, 'index.dev.html')
+const distIndexHtml = join(dist, 'index.html')
 const builtIndexHtml = join(root, 'index.html')
-if (existsSync(distDevHtml)) {
-  cpSync(distDevHtml, builtIndexHtml)
+if (existsSync(distIndexHtml)) {
+  cpSync(distIndexHtml, builtIndexHtml)
 }
 
 console.log('Synced dist/ to project root for GitHub Pages (main branch).')
