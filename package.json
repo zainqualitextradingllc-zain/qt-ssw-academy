@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "deploy": "vite build && gh-pages -d dist"
+    "deploy": "vite build && node scripts/sync-pages-root.mjs && gh-pages -d dist",
+    "deploy:pages": "vite build && node scripts/sync-pages-root.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.2",
