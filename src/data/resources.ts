@@ -1,4 +1,5 @@
 import type { BadgeStatus } from '../components/ui/StatusBadge';
+import type { TabId } from '../types';
 
 export interface AppResource {
   id: string;
@@ -10,7 +11,7 @@ export interface AppResource {
   status: BadgeStatus;
   ctaJa: string;
   ctaEn: string;
-  tab?: 'dashboard' | 'flashcards' | 'quiz' | 'inspect' | 'certificate';
+  tab?: TabId;
 }
 
 export const QUICK_ACTIONS: AppResource[] = [
@@ -51,7 +52,7 @@ export const QUICK_ACTIONS: AppResource[] = [
     tab: 'flashcards',
   },
   {
-    id: 'certificate',
+    id: 'resources',
     icon: '📋',
     titleJa: '資料等を見る',
     titleEn: 'View Resources',
@@ -60,7 +61,7 @@ export const QUICK_ACTIONS: AppResource[] = [
     status: 'available',
     ctaJa: '',
     ctaEn: '',
-    tab: 'certificate',
+    tab: 'resources',
   },
 ];
 

@@ -11,10 +11,10 @@ import Dashboard from './components/Dashboard';
 import FlashCards from './components/FlashCards';
 import Quiz from './components/Quiz';
 import InspectTag from './components/InspectTag';
+import ResourceCenter from './components/ResourceCenter';
 import Certificate from './components/Certificate';
 import Footer from './components/Footer';
-
-type TabId = 'dashboard' | 'flashcards' | 'quiz' | 'inspect' | 'certificate';
+import type { TabId } from './types';
 
 interface Tab {
   id: TabId;
@@ -28,6 +28,7 @@ const TABS: Tab[] = [
   { id: 'flashcards',  labelJa: 'N4 語彙',        labelEn: 'N4 Vocab',     icon: '◈' },
   { id: 'quiz',        labelJa: 'クイズ',          labelEn: 'Quiz',         icon: '◉' },
   { id: 'inspect',     labelJa: 'InspectTag™',    labelEn: 'InspectTag™',  icon: '◎' },
+  { id: 'resources',   labelJa: '資料',            labelEn: 'Resources',    icon: '◇' },
   { id: 'certificate', labelJa: '証明書',          labelEn: 'Certificate',  icon: '◆' },
 ];
 
@@ -41,6 +42,7 @@ const App: React.FC = () => {
       case 'flashcards':  return <FlashCards lang={lang} t={t} />;
       case 'quiz':        return <Quiz lang={lang} t={t} />;
       case 'inspect':     return <InspectTag lang={lang} t={t} />;
+      case 'resources':   return <ResourceCenter lang={lang} t={t} onNavigate={setActiveTab} />;
       case 'certificate': return <Certificate lang={lang} t={t} />;
     }
   };

@@ -5,6 +5,8 @@
 
 export type Language = 'ja' | 'en';
 
+export type TabId = 'dashboard' | 'flashcards' | 'quiz' | 'inspect' | 'resources' | 'certificate';
+
 export interface Course {
   id: string;
   titleJa: string;
